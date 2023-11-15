@@ -32,7 +32,7 @@ class GamePlanner:
     self.import_data()
     print('Generating Game Plan')
     # self.generate_gameplan()
-    routes_by_form_and_backset = self.gp_routes_by_formation_and_backset3()
+    routes_by_form_and_backset = self.gp_routes_by_formation_and_backset()
     print('\n\n***Routes by formation and backset:')
     print(routes_by_form_and_backset)
     GamePlanner.table_to_pdf(routes_by_form_and_backset,'Routes by formation and backset')
@@ -201,107 +201,7 @@ class GamePlanner:
     # Return
     return grouped
 
-  def gp_routes_by_formation_and_backset2(self):
-      columns = ['OFF FORM','BACKFIELD','ROUTES']
-      df = self.data[columns].copy()
-      df['ROUTES'] = df['ROUTES'].fillna(0)
-
-      # Calculate the percentage of each 'BACKFIELD' by 'OFF FORM' (FORMATION)
-      backfield_percentage_by_off_form = (df.groupby(['OFF FORM', 'BACKFIELD']).size() / df.groupby('OFF FORM').size()) * 100
-      # Reset the index and rename the columns
-      backfield_percentage_by_off_form = backfield_percentage_by_off_form.reset_index()
-      backfield_percentage_by_off_form.columns = ['OFF FORM', 'BACKFIELD', 'BACKFIELD PERCENTAGE']
-
-      # Calculate the total percentage by 'OFF FORM'
-      total_percentage_by_off_form = df.groupby('OFF FORM').size() / len(df) * 100
-      total_percentage_by_off_form = total_percentage_by_off_form.reset_index()
-      total_percentage_by_off_form.columns = ['OFF FORM', 'TOTAL PERCENTAGE']
-
-      # Merge the total percentage information into the DataFrame
-      backfield_percentage_by_off_form = pd.merge(backfield_percentage_by_off_form, total_percentage_by_off_form, on='OFF FORM')
-
-      backfield_percentage_by_off_form.set_index(['OFF FORM', 'BACKFIELD'], inplace=True)
-      print(backfield_percentage_by_off_form)
-
-      # Return
-      return None
-  
-  def gp_routes_by_formation_and_backset3(self):
-      columns = ['OFF FORM','BACKFIELD','ROUTES']
-      df = self.data.copy()
-      df = df[columns]
-      df = df[pd.isna(df['ROUTES'])==False]
-      df.reset_index(inplace=True)
-
-      # Calculate the percentage of each 'BACKFIELD' by 'OFF FORM' (FORMATION)
-      backfield_percentage_by_off_form = (df.groupby(['OFF FORM', 'BACKFIELD']).size() / df.groupby('OFF FORM').size()) * 100
-      # Reset the index and rename the columns
-      backfield_percentage_by_off_form = backfield_percentage_by_off_form.reset_index()
-      backfield_percentage_by_off_form.columns = ['OFF FORM', 'BACKFIELD', 'BACKFIELD PERCENTAGE']
-
-      # Calculate the total percentage by 'OFF FORM'
-      total_percentage_by_off_form = df.groupby('OFF FORM').size() / len(df) * 100
-      total_percentage_by_off_form = total_percentage_by_off_form.reset_index()
-      total_percentage_by_off_form.columns = ['OFF FORM', 'TOTAL PERCENTAGE']
-
-      # Calculate the percentage of 'ROUTES' by 'OFF FORM' and 'BACKFIELD'
-      routes_percentage_by_off_form_and_backfield = (df.groupby(['OFF FORM', 'BACKFIELD', 'ROUTES']).size() / df.groupby(['OFF FORM', 'BACKFIELD']).size()) * 100
-      # Reset the index and rename the columns for the routes percentage
-      routes_percentage_by_off_form_and_backfield = routes_percentage_by_off_form_and_backfield.reset_index()
-      routes_percentage_by_off_form_and_backfield.columns = ['OFF FORM', 'BACKFIELD', 'ROUTES', 'ROUTES PERCENTAGE']
-
-      # Merge the total percentage and routes percentage information into the DataFrame
-      backfield_percentage_by_off_form = pd.merge(backfield_percentage_by_off_form, total_percentage_by_off_form, on='OFF FORM')
-      backfield_percentage_by_off_form = pd.merge(backfield_percentage_by_off_form, routes_percentage_by_off_form_and_backfield, on=['OFF FORM', 'BACKFIELD'])
-
-      backfield_percentage_by_off_form.set_index(['OFF FORM', 'BACKFIELD'], inplace=True)
-      # backfield_percentage_by_off_form = backfield_percentage_by_off_form.groupby(['OFF FORM', 'BACKFIELD']).reset_index()
-      print(backfield_percentage_by_off_form)
-
-      # Return
-      return None
-  
-  def gp_routes_by_formation_and_backset3(self):
-      columns = ['OFF FORM','BACKFIELD','ROUTES']
-      df = self.data.copy()
-      df = df[columns]
-      df = df[pd.isna(df['ROUTES'])==False]
-      df.reset_index(inplace=True)
-
-      # Calculate the percentage of each 'BACKFIELD' by 'OFF FORM' (FORMATION)
-      backfield_percentage_by_off_form = (df.groupby(['OFF FORM', 'BACKFIELD']).size() / df.groupby('OFF FORM').size()) * 100
-      # Reset the index and rename the columns
-      backfield_percentage_by_off_form = backfield_percentage_by_off_form.reset_index()
-      backfield_percentage_by_off_form.columns = ['OFF FORM', 'BACKFIELD', 'BACKFIELD PERCENTAGE']
-
-      # Calculate the total percentage by 'OFF FORM'
-      total_percentage_by_off_form = df.groupby('OFF FORM').size() / len(df) * 100
-      total_percentage_by_off_form = total_percentage_by_off_form.reset_index()
-      total_percentage_by_off_form.columns = ['OFF FORM', 'TOTAL PERCENTAGE']
-
-      # Calculate the percentage of 'ROUTES' by 'OFF FORM' and 'BACKFIELD'
-      routes_percentage_by_off_form_and_backfield = (df.groupby(['OFF FORM', 'BACKFIELD', 'ROUTES']).size() / df.groupby(['OFF FORM', 'BACKFIELD']).size()) * 100
-      # Reset the index and rename the columns for the routes percentage
-      routes_percentage_by_off_form_and_backfield = routes_percentage_by_off_form_and_backfield.reset_index()
-      routes_percentage_by_off_form_and_backfield.columns = ['OFF FORM', 'BACKFIELD', 'ROUTES', 'ROUTES PERCENTAGE']
-
-      # Merge the total percentage and routes percentage information into the DataFrame
-      backfield_percentage_by_off_form = pd.merge(backfield_percentage_by_off_form, total_percentage_by_off_form, on='OFF FORM')
-      backfield_percentage_by_off_form = pd.merge(backfield_percentage_by_off_form, routes_percentage_by_off_form_and_backfield, on=['OFF FORM', 'BACKFIELD'])
-
-      # Group by 'OFF FORM' and 'BACKFIELD'
-      grouped_result = backfield_percentage_by_off_form.groupby(['OFF FORM', 'BACKFIELD'])
-
-      # Print the grouped result
-      for (off_form, backfield), group in grouped_result:
-         print(f"OFF FORM: {off_form}, BACKFIELD: {backfield}")
-         print(group)
-         print("\n")
-
-      # Return
-      return None
-  
-  def gp_routes_by_formation_and_backset3(self):
+  def gp_routes_by_formation_and_backset(self):
       columns = ['OFF FORM','BACKFIELD','ROUTES']
       df = self.data.copy()
       df = df[columns]
